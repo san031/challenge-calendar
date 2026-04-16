@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     'api',
-    'account'
+    'account',
+    'rest_framework_simplejwt',
     # 'allauth.socialaccount.providers.google',
 
 ]
@@ -131,6 +132,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'account.User'   #override default user model
 
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend', )
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIAL= True

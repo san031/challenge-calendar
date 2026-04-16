@@ -1,13 +1,15 @@
 from django.shortcuts import render
-from rest_framework import views
+from rest_framework import views,permissions
 from rest_framework.response import Response
 from .serializers import UserSerializer
 from .models import User
 from rest_framework.exceptions import AuthenticationFailed
 import jwt
+from .authentication import JWTCookieAuthentication
 # Create your views here.
 
 class RegisterAPIView(views.APIView):
+    permission_classes = [permissions.AllowAny]
     def post(self,request):
         serializer = UserSerializer(data = request.data)
         serializer.is_valid(raise_exception=True)
@@ -15,6 +17,7 @@ class RegisterAPIView(views.APIView):
         return Response(serializer.data)
     
 class LoginAPIView(views.APIView):
+    permission_classes = [permissions.AllowAny]
     def post(Self,request):
         email = request.data['email']
         password = request.data['password']
@@ -52,8 +55,10 @@ class LoginAPIView(views.APIView):
 
 
 class UserAPIView(views.APIView):
+    permission_classes = [permissions.AllowAny]
     def get(self,request):
         token = request.COOKIES.get('jwt')
+        print(token)
         #reading the JWT token from the browser's cookies
 
         if not token:
@@ -62,7 +67,7 @@ class UserAPIView(views.APIView):
         try:
             payload = jwt.decode(token,'secret', algorithms=['HS256'])
             # The payload will store whatever data you put into JWT when it was created
-
+            print(payload)
             #Decode token → get user id from payload → fetch user from database
 
         except jwt.ExpiredSignatureError:
@@ -77,6 +82,9 @@ class UserAPIView(views.APIView):
 
 
 class LogoutAPIView(views.APIView):
+    authentication_classes = [JWTCookieAuthentication]
+
+    permission_classes = [permissions.AllowAny]
     def post(self,request):
         response = Response()
         response.delete_cookie('jwt')

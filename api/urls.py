@@ -6,5 +6,6 @@ urlpatterns = [
     path('gettodo/',todoviewsets.as_view({'get':'get'})),
     path('newtodoitem/',todolistviewsets.as_view({'post':'post'})),
     path('updatetodoitem/<int:id>/',todolistviewsets.as_view({'patch':'update'})),
-    path('removetodoitem/<int:id>/',todolistviewsets.as_view({'delete':'removetodo'}))
+    path('removetodoitem/<int:id>/',todolistviewsets.as_view({'delete':'removetodo'})),
+    path('me/',validateUserView.as_view())
 ]

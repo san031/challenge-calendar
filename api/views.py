@@ -1,10 +1,24 @@
 from django.shortcuts import render
 from .models import *
 from .serializers import todoSerializer,todoItemSerializer
-from rest_framework import viewsets,permissions
+from rest_framework import viewsets,permissions,views
 from rest_framework.response import Response
+from account.authentication import JWTCookieAuthentication
+from account.serializers import UserSerializer
 
 # Create your views here.
+
+class validateUserView(views.APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [JWTCookieAuthentication]
+
+
+    def get(self,request):
+        serializer = UserSerializer(request.user)
+        return Response({
+            "isAuthenticated":True,
+            "email":request.user.email
+        })
 
 class todoviewsets(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
