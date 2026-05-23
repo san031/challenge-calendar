@@ -12,6 +12,11 @@ class Todo(models.Model):
     head = models.CharField(max_length=50,default=default_title)
     created_at = models.DateField( auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together  = ['user','created_at']
+
+
     
 
     def __str__(self):

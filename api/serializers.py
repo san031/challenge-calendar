@@ -12,7 +12,7 @@ class todoSerializer(serializers.ModelSerializer):
         read_only = True,
         slug_field = 'title'
     )
-    todo_item = todoItemSerializer(read_only = True,many =True)
+    todo_item = todoItemSerializer(read_only = True,many =True, )
     class Meta:
         model = Todo
         fields = ['id','user','head','created_at','todolist','todo_item']

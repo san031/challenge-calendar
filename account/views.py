@@ -5,6 +5,7 @@ from .serializers import UserSerializer
 from .models import User
 from rest_framework.exceptions import AuthenticationFailed
 import jwt
+import datetime
 from .authentication import JWTCookieAuthentication
 # Create your views here.
 
@@ -18,7 +19,7 @@ class RegisterAPIView(views.APIView):
     
 class LoginAPIView(views.APIView):
     permission_classes = [permissions.AllowAny]
-    def post(Self,request):
+    def post(self,request):
         email = request.data['email']
         password = request.data['password']
 
@@ -32,7 +33,10 @@ class LoginAPIView(views.APIView):
 
         payload = {
             "id" : user.id,
-            "email" : user.email
+            "email" : user.email,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            "iat": datetime.datetime.utcnow()
+
         }
 
         # jwt has 3 parts separated by dots: Header.payload.signature
@@ -47,7 +51,7 @@ class LoginAPIView(views.APIView):
         response.set_cookie(key='jwt', value=token, httponly=True)
 
         response.data = {
-            'jwt token' : token
+            'jwttoken' : token
         }
 
         return response
@@ -56,27 +60,12 @@ class LoginAPIView(views.APIView):
 
 class UserAPIView(views.APIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = [JWTCookieAuthentication]
+
     def get(self,request):
-        token = request.COOKIES.get('jwt')
-        print(token)
-        #reading the JWT token from the browser's cookies
-
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!!")
-         
-        try:
-            payload = jwt.decode(token,'secret', algorithms=['HS256'])
-            # The payload will store whatever data you put into JWT when it was created
-            print(payload)
-            #Decode token → get user id from payload → fetch user from database
-
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!!')
         
-        # here payload is used after decoding
-        user = User.objects.filter(id = payload['id']).first()
 
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(request.user)
 
         return Response(serializer.data)
 
@@ -92,3 +81,13 @@ class LogoutAPIView(views.APIView):
             'message' : "successful"
         }
         return response
+
+
+class jwtToken(views.APIView):
+    permission_classes=[permissions.AllowAny]
+    authentication_classes = [JWTCookieAuthentication]
+
+    def get(self,request):
+        token = request.COOKIES.get('jwt')
+
+        return Response({'token': token})

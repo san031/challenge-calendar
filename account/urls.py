@@ -7,6 +7,6 @@ urlpatterns = [
     path('login/', LoginAPIView.as_view()),
     path('user-detail/',UserAPIView.as_view()),
     path('logout/', LogoutAPIView.as_view()),
-    path('token/',TokenObtainPairView.as_view(),name='token_refresh'),
-    path('token/refresh/',TokenObtainPairView.as_view(), name='token_refresh'),
+    path('token/',jwtToken.as_view()),
+    # path('token/refresh/',TokenObtainPairView.as_view(), name='token_refresh'),
 ]
