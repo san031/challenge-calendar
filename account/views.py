@@ -59,13 +59,14 @@ class LoginAPIView(views.APIView):
 
 
 class UserAPIView(views.APIView):
-    permission_classes = [permissions.AllowAny]
-    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTCookieAuthentication]
 
     def get(self,request):
         
 
         serializer = UserSerializer(request.user)
+        print(f"user-detail data: {request.user}  , serializer:{serializer}")
 
         return Response(serializer.data)
 

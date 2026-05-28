@@ -9,7 +9,7 @@ class JWTCookieAuthentication(authentication.BaseAuthentication):
         if not auth_header or not auth_header.startswith('Bearer'):
             return None
 
-        token = auth_header.split('')[1]
+        token = auth_header.split(' ')[1]
         # if not token:
         #     raise exceptions.AuthenticationFailed("Unauthenticated !!")
         try:

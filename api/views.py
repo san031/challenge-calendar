@@ -6,12 +6,13 @@ from rest_framework.response import Response
 from account.authentication import JWTCookieAuthentication
 from account.serializers import UserSerializer
 from rest_framework import status
+from rest_framework.authentication import BasicAuthentication
 
 # Create your views here.
 
 class validateUserView(views.APIView):
     permission_classes = [permissions.AllowAny]
-    authentication_classes = [JWTCookieAuthentication]
+    # authentication_classes = [JWTCookieAuthentication]
 
  
     def get(self,request):
@@ -51,7 +52,7 @@ class todoviewsets(viewsets.ViewSet):
 class todolistviewsets(viewsets.ViewSet):
     serializer_class = todoItemSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    authentication_classes = [JWTCookieAuthentication]
     def update(self,request,id = None):
         to_check_todo = ItemTodo.objects.get (id = id)
         serializer = self.serializer_class(to_check_todo,data = request.data,partial =True)
