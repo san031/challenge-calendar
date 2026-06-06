@@ -60,7 +60,7 @@ class LoginAPIView(views.APIView):
 
 class UserAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
-    # authentication_classes = [JWTCookieAuthentication]
+    authentication_classes = [JWTCookieAuthentication]
 
     def get(self,request):
         

@@ -7,5 +7,6 @@ urlpatterns = [
     path('newtodoitem/',todolistviewsets.as_view({'post':'post'})),
     path('updatetodoitem/<int:id>/',todolistviewsets.as_view({'patch':'update'})),
     path('removetodoitem/<int:id>/',todolistviewsets.as_view({'delete':'removetodo'})),
+    path('getpercentage/', streakRecordviewsets.as_view({'get': 'getpercentagetaskcompleted'})),
     path('me/',validateUserView.as_view())
 ]

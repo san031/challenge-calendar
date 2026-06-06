@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import *
-from .serializers import todoSerializer,todoItemSerializer
+from .serializers import todoSerializer,todoItemSerializer,streakRecordSerializer
 from rest_framework import viewsets,permissions,views
 from rest_framework.response import Response
 from account.authentication import JWTCookieAuthentication
@@ -62,7 +62,7 @@ class todolistviewsets(viewsets.ViewSet):
 
     def post(self,request,*args, **kwargs):
 
-        todo = Todo.objects.get(
+        todo, created = Todo.objects.get_or_create(
             user = request.user,
             created_at = date.today()  
         )
@@ -76,5 +76,26 @@ class todolistviewsets(viewsets.ViewSet):
         todo_item = ItemTodo.objects.get(id = id)
         todo_item.delete()
         return Response("deletion successful")
+
+
+class streakRecordviewsets(viewsets.ViewSet):
+    serializer_class = streakRecordSerializer()
+    def getpercentagetaskcompleted(self,request):
+        # usr = streakRecord.objects.filter(user = request.user )
+        todos = Todo.objects.filter(user = request.user).prefetch_related('todo_item')
+        serializer = streakRecordSerializer(todos, many = True)
+        return Response(serializer.data)
+
+        # todos = Todo.objects.filter(user = request.user).prefetch_related('todo_item')
+
+        # result = []
+        # for todo in todos:
+        #     result.append({
+        #         "dateid":str(todo.created_at)
+        #         "todo":todoSerializer(todo).data,
+        #         "completion_percentage":calcul
+        #     })
+
+
 
 

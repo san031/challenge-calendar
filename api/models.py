@@ -14,10 +14,7 @@ class Todo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together  = ['user','created_at']
-
-
-    
+        unique_together  = ['user','created_at']    
 
     def __str__(self):
         return self.head
@@ -30,6 +27,17 @@ class ItemTodo(models.Model):
     def __str__(self):
         return self.title
 
+
+class streakRecord(models.Model):
+    dateid = models.DateField(default  = date.today)
+    todo = models.OneToOneField(Todo, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+    class Meta:
+        unique_together = ['dateid','todo','user']
+
+    
 
 
 
