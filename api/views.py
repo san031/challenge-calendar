@@ -82,7 +82,7 @@ class streakRecordviewsets(viewsets.ViewSet):
     serializer_class = streakRecordSerializer()
     def getpercentagetaskcompleted(self,request):
         # usr = streakRecord.objects.filter(user = request.user )
-        todos = Todo.objects.filter(user = request.user).prefetch_related('todo_item')
+        todos = streakRecord.objects.filter(user = request.user).prefetch_related('todo')
         serializer = streakRecordSerializer(todos, many = True)
         return Response(serializer.data)
 
@@ -97,5 +97,32 @@ class streakRecordviewsets(viewsets.ViewSet):
         #     })
 
 
+class streakHistoryView(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = streakRecordSerializer
+    def get(self,request):
+        user = request.user
+        current_year = date.today().year
+
+        start_date = date(current_year, 1,1)
+        end_date = date(current_year,12,31)
+
+        records = streakRecord.objects.filter(
+            user = user,
+            dateid__range= [start_date,end_date]
+        ).select_related('todo').prefetch_related('todo__todo_item')
+
+        # .values() won't work since it only fetches actual DB columns.
+        # result = [
+        #     {
+        #         "dateid": str(entry['dateid']),
+        #         "completion_percentage": entry['completion_percentage']
+        #     }
+        #     for entry in completions
+        # ]
+
+        serializer = self.serializer_class(records, many = True)
+
+        return Response(serializer.data)
 
 

@@ -30,7 +30,7 @@ class ItemTodo(models.Model):
 
 class streakRecord(models.Model):
     dateid = models.DateField(default  = date.today)
-    todo = models.OneToOneField(Todo, on_delete=models.CASCADE)
+    todo = models.OneToOneField(Todo, on_delete=models.CASCADE, )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 

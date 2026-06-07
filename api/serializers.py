@@ -27,7 +27,7 @@ class todoSerializer(serializers.ModelSerializer):
 
 
 class streakRecordSerializer(serializers.ModelSerializer):
-    todo = todoSerializer()
+    todo = todoSerializer(read_only = True,)  
     completion_percentage = serializers.SerializerMethodField()   
     #A read-only field that get its representation from calling a method on the parent serializer class. 
     # The method called will be of the form "get_{field_name}", 
