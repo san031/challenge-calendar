@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from account.authentication import JWTCookieAuthentication
 from account.serializers import UserSerializer
 from rest_framework import status
-from rest_framework.authentication import BasicAuthentication
+# from rest_framework.authentication import BasicAuthentication
 
 # Create your views here.
 

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+load_dotenv(BASE_DIR / '.env')
+# ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
 # Application definition
 
@@ -42,7 +46,8 @@ INSTALLED_APPS = [
     'api',
     'account',
     'rest_framework_simplejwt',
-    'schema_viewer'
+    'schema_viewer',
+    'me',
     # 'allauth.socialaccount.providers.google',
 
 ]

@@ -25,5 +25,6 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path('',include('api.urls')),
     path('accounts/', include('account.urls')),
+    path('me/', include("me.urls")),
     path('schema-viewer/', include('schema_viewer.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
