@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +49,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'schema_viewer',
     'me',
+    'cloudinary_storage',
+    'cloudinary',
     # 'allauth.socialaccount.providers.google',
 
 ]
@@ -64,6 +67,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'viens.urls'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
 
 TEMPLATES = [
     {
@@ -136,6 +145,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
@@ -143,6 +154,8 @@ MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'account.User'   #override default user model
 
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend', )
+
+
 
 
 REST_FRAMEWORK = {

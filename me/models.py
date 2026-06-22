@@ -1,5 +1,7 @@
 from django.db import models
 from account.models import User
+from cloudinary.models import CloudinaryField
+
 
 # Create your models here.
 class JournalEntry(models.Model):
@@ -31,11 +33,35 @@ class JournalEntry(models.Model):
 
 class Quotation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(auto_now=True)
     quote = models.TextField()
     quotedby =  models.CharField(max_length=50,blank=True, null= True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+class Catalog(models.Model):
+
+    CATEGORY_CHOICES = [
+        ('hobbies',"Hobbies"),
+        ('travel','Travel'),
+        ('shopping','Shopping'),
+        ('food','Food'),
+        ('people',"People"),
+        ('sports',"Sports"),
+        ('miscellaneous','Miscellaneous')
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50, blank=True)
+    is_done = models.BooleanField(default=False)
+    category = models.CharField(max_length=50,choices = CATEGORY_CHOICES, blank=True, null= True)
+    address = models.TextField()
+    date_added = models.DateField(auto_now=True)
+    thumbnail = CloudinaryField(
+        'image',
+        folder='thumbnail_catalog/',   # organizes inside cloudinary dashboard
+        null=True,
+        blank=True
+    )
+    #add category
     
 
         
