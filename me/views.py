@@ -77,7 +77,10 @@ class CatalogViewset(viewsets.ViewSet):
         return Response(serializer.data)
     
     def get(self,request):
+        chosen_wishlist = request.query_params.get('category')
         q = Catalog.objects.filter(user = request.user)
+        if chosen_wishlist:
+            q = q.filter(category = chosen_wishlist)
         serializer = self.serializer_class(q, many = True)
         return Response(serializer.data)
         

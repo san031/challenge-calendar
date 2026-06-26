@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import date
 from account.models import User
-
+from django.core.cache import cache
 # Create your models here.
 
 def default_title():
@@ -36,6 +36,11 @@ class streakRecord(models.Model):
 
     class Meta:
         unique_together = ['dateid','todo','user']
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Wipe the cache for this specific user upon new activity
+        cache.delete(f"user_monthly_streak_{self.user.id}")
 
     
 

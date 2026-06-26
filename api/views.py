@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from account.authentication import JWTCookieAuthentication
 from account.serializers import UserSerializer
 from rest_framework import status
+import calendar
 # from rest_framework.authentication import BasicAuthentication
 
 # Create your views here.
@@ -79,12 +80,36 @@ class todolistviewsets(viewsets.ViewSet):
 
 
 class streakRecordviewsets(viewsets.ViewSet):
-    serializer_class = streakRecordSerializer()
+    serializer_class = streakRecordSerializer
     def getpercentagetaskcompleted(self,request):
-        # usr = streakRecord.objects.filter(user = request.user )
-        todos = streakRecord.objects.filter(user = request.user).prefetch_related('todo')
-        serializer = streakRecordSerializer(todos, many = True)
-        return Response(serializer.data)
+        user = request.user
+        
+        # Get all todos for the user
+        todos = Todo.objects.filter(user=user).prefetch_related('todo_item')
+        
+        if not todos.exists():
+            return Response({
+                'total_tasks': 0,
+                'completed_tasks': 0,
+                'completion_percentage': 0
+            }, status=status.HTTP_200_OK)
+        
+        # Calculate total and completed tasks across all todos
+        total_tasks = 0
+        completed_tasks = 0
+        
+        for todo in todos:
+            total_tasks += todo.todo_item.count()
+            completed_tasks += todo.todo_item.filter(is_done=True).count()
+        
+        # Calculate overall completion percentage
+        completion_percentage = round((completed_tasks / total_tasks) * 100, 2) if total_tasks > 0 else 0
+        
+        return Response({
+            'total_tasks': total_tasks,
+            'completed_tasks': completed_tasks,
+            'completion_percentage': completion_percentage
+        }, status=status.HTTP_200_OK)
 
         # todos = Todo.objects.filter(user = request.user).prefetch_related('todo_item')
 
@@ -124,5 +149,39 @@ class streakHistoryView(viewsets.ViewSet):
         serializer = self.serializer_class(records, many = True)
 
         return Response(serializer.data)
+    
+class MonthlyStreakAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated] # Ensures request.user is populated
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        cache_key = f"user_monthly_streak_{user.id}"
+        
+        # 1. Attempt to grab cached data from Redis
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        # 2. Determine bounds for the current month
+        today = date.today()
+        start_date = today.replace(day=1)
+        _, num_days = calendar.monthrange(today.year, today.month)
+        end_date = today.replace(day=num_days)
+
+        # 3. Fetch records for the user within this month
+        records = streakRecord.objects.filter(
+            user=user,
+            dateid__gte=start_date,
+            dateid__lte=end_date
+        ).select_related('todo') # Optimizes performance to prevent N+1 queries
+
+        # 4. Run data through the serializer
+        serializer = streakRecordSerializer(records, many=True)
+        serialized_data = serializer.data  
+
+        # 5. Save output to Redis cache for 15 minutes (900 seconds)
+        cache.set(cache_key, serialized_data, 900)
+
+        return Response(serialized_data)
 
 

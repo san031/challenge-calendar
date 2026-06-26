@@ -19,7 +19,7 @@ class JournalEntry(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
     mood = models.CharField(max_length=50,choices = MOOD_CHOICES, blank=True, null= True)

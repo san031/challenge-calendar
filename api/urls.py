@@ -9,5 +9,6 @@ urlpatterns = [
     path('removetodoitem/<int:id>/',todolistviewsets.as_view({'delete':'removetodo'})),
     path('streak/getpercentage/', streakRecordviewsets.as_view({'get': 'getpercentagetaskcompleted'})),
     path('streak/history/', streakHistoryView.as_view({'get':'get'})),
-    path('me/',validateUserView.as_view())
+    path('monthly-streak/', MonthlyStreakAPIView.as_view(), name='monthly-streak'),
+    path('me_auth/',validateUserView.as_view())
 ]
