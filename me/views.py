@@ -62,6 +62,28 @@ class QuotationViewset(viewsets.ViewSet):
         q = Quotation.objects.filter(user = request.user)
         serializer = self.serializer_class(q, many = True)
         return Response(serializer.data)
+
+    def update(self,request,id=None):
+        try:
+            item = Quotation.objects.get(id = id)
+        except Quotation.DoesNotExist:
+            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(item, data = request.data, partial = True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+    
+    def nomoremotivation(self,request, id= None):
+        del_quote = Quotation.objects.get(id = id)
+        del_quote.delete()
+        return Response("deletion successful")
+
+
+
     
 
 class CatalogViewset(viewsets.ViewSet):
@@ -83,4 +105,16 @@ class CatalogViewset(viewsets.ViewSet):
             q = q.filter(category = chosen_wishlist)
         serializer = self.serializer_class(q, many = True)
         return Response(serializer.data)
+
+
+    def update(self,request,id=None):
+        item = Catalog.objects.get(id = id)
+        serializer = self.serializer_class(item, data = request.data, partial = True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status = status.HTTP_200_OK)
         
+    def notanymore(self, request, id= None):
+        del_wishlist = Catalog.objects.get(id = id)
+        del_wishlist.delete()
+        return Response("deletion Successful")

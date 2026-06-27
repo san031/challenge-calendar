@@ -124,31 +124,32 @@ class streakRecordviewsets(viewsets.ViewSet):
 
 class streakHistoryView(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = streakRecordSerializer
-    def get(self,request):
+
+    def get(self, request):
         user = request.user
         current_year = date.today().year
 
-        start_date = date(current_year, 1,1)
-        end_date = date(current_year,12,31)
+        todos = Todo.objects.filter(
+            user=user,
+            created_at__year=current_year
+        ).prefetch_related('todo_item')
 
-        records = streakRecord.objects.filter(
-            user = user,
-            dateid__range= [start_date,end_date]
-        ).select_related('todo').prefetch_related('todo__todo_item')
+        result = []
+        for todo in todos:
+            items = todo.todo_item.all()
+            total = items.count()
+            completed = items.filter(is_done=True).count()
+            percentage = round((completed / total * 100), 2) if total > 0 else 0
 
-        # .values() won't work since it only fetches actual DB columns.
-        # result = [
-        #     {
-        #         "dateid": str(entry['dateid']),
-        #         "completion_percentage": entry['completion_percentage']
-        #     }
-        #     for entry in completions
-        # ]
+            result.append({
+                "dateid": todo.created_at,
+                "todo_head": todo.head,
+                "total_tasks": total,
+                "completed_tasks": completed,
+                "completion_percentage": percentage
+            })
 
-        serializer = self.serializer_class(records, many = True)
-
-        return Response(serializer.data)
+        return Response(result)
     
 class MonthlyStreakAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated] # Ensures request.user is populated
