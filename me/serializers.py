@@ -4,12 +4,12 @@ from .models import *
 class JournalEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = JournalEntry
-        fields = ['user','date','created_at','content','mood', 'mood_auto_detected']
+        fields = ['id','user','date','created_at','content','mood', 'mood_auto_detected']
 
 class QuotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quotation
-        fields = ['date','quote','quotedby']
+        fields = ['id','date','quote','quotedby']
 
         read_only_fields = ['user']
 
